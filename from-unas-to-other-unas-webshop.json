@@ -1,0 +1,1191 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        2224
+      ],
+      "id": "ef545fbf-aa30-4623-a849-333fa2374f04",
+      "name": "ConvertToJson"
+    },
+    {
+      "parameters": {
+        "url": "[REDACTED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "[REDACTED]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Category>761886</Category>\n  <Compress>no</Compress>\n  <GetName>1</GetName>\n  <GetStatus>1</GetStatus>\n  <GetPrice>1</GetPrice>\n  <GetCategory>1</GetCategory>\n  <GetAlterCategory>1</GetAlterCategory>\n  <GetDescriptionLong>1</GetDescriptionLong>\n  <GetImage>1</GetImage>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        2224
+      ],
+      "id": "2d94e3fc-e123-4910-b857-98f58507d5cc",
+      "name": "GetProductDB"
+    },
+    {
+      "parameters": {
+        "url": "[REDACTED_URL]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        2224
+      ],
+      "id": "248175b0-a242-4b4a-b97d-ecd357ae1913",
+      "name": "get new products xlsx"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "includeEmptyCells": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        2224
+      ],
+      "id": "2af892d2-f828-4671-a0cb-963abdd27f20",
+      "name": "Extract from xlsx"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        880,
+        2224
+      ],
+      "id": "d01af6df-92de-43c8-b3ef-44264e694315",
+      "name": "getToken"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        576,
+        2544
+      ],
+      "id": "2e2b5e55-4859-4144-93ac-24e4142e9d82",
+      "name": "continue product flow"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2976,
+        2272
+      ],
+      "id": "5288d639-b8ab-4598-8cb9-58c4a5e592e1",
+      "name": "Aggregate readed products"
+    },
+    {
+      "parameters": {
+        "content": "# get new products from reflexshop",
+        "height": 96,
+        "width": 768,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        2064
+      ],
+      "typeVersion": 1,
+      "id": "61757f39-29c8-48b8-b5cd-e59f9c6318c2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "518bb168-bf27-45e4-84fa-13777f31f3bd",
+              "name": "api_key",
+              "value": "[REDACTED]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        2224
+      ],
+      "id": "4aa9db4f-b1e9-4dc4-a9bd-c9098ba3942e",
+      "name": "unas api key"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "124dad7b-6511-45ce-a65e-937a184e37df",
+              "leftValue": "={{ \n[\n  $json[\"Alternatív Kategória 1\"],\n  $json[\"Alternatív Kategória 2\"],\n  $json[\"Alternatív Kategória 3\"],\n  $json[\"Alternatív Kategória 4\"],\n  $json[\"Alternatív Kategória 5\"]\n].some(v => v !== undefined && v !== null && String(v).trim() !== \"\")\n}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2528,
+        2208
+      ],
+      "id": "abcc9bba-64ce-40dc-bf7e-4282538ef919",
+      "name": "If category present"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        2528
+      ],
+      "id": "e2ce434d-13d1-43d1-979c-285ace743d58",
+      "name": "flow execution finished",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2c6c2d2b-bf15-4459-a40c-a8bd4dc8ca3c",
+              "name": "Cikkszám",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Cikkszám'] }}",
+              "type": "string"
+            },
+            {
+              "id": "44c4f986-0a17-4e8f-a727-6720e4ae6976",
+              "name": "Termék Név",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Termék Név'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00c80338-6144-4224-91a6-51ee9dca3c56",
+              "name": "Rövid Leírás",
+              "value": "={{ $json.message.content.leiras }}",
+              "type": "string"
+            },
+            {
+              "id": "bf030982-a34e-4687-9d2f-579af5ba85f4",
+              "name": "Kategória",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Kategória'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c6c6a5f5-38f4-4c50-82e5-27db69507912",
+              "name": "Kép link",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Kép link'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ff137404-bd86-4c25-aa2a-f6bd2f184d4f",
+              "name": "Alternatív Kategória 1",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 1'] }}",
+              "type": "string"
+            },
+            {
+              "id": "026f39b0-1fa7-4504-9d3d-2f53a5b3c1db",
+              "name": "Alternatív Kategória 2",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 2'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f95c7042-334c-4e18-81b6-b7928b7028bd",
+              "name": "Alternatív Kategória 3",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 3'] }}",
+              "type": "string"
+            },
+            {
+              "id": "1368803f-85c9-4549-8d3c-70daa85ea4e8",
+              "name": "Alternatív Kategória 4",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 4'] }}",
+              "type": "string"
+            },
+            {
+              "id": "694ffb88-9ac3-413a-affe-4e99195ab1d4",
+              "name": "Alternatív Kategória 5",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 5'] }}",
+              "type": "string"
+            },
+            {
+              "id": "cecfc99b-6a12-4058-b85b-bcd7d425d87c",
+              "name": "Alternatív Kategória 6",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 6'] }}",
+              "type": "string"
+            },
+            {
+              "id": "36444c5e-dfae-41e4-b35e-1e310531d086",
+              "name": "Alternatív Kategória 7",
+              "value": "={{ $('OpenAI description API cooldown').item.json.product['Alternatív Kategória 7'] }}",
+              "type": "string"
+            },
+            {
+              "id": "9054ac8f-619a-4b29-83e9-c02407443678",
+              "name": "webshop",
+              "value": "={{ $('OpenAI description API cooldown').item.json.webshop }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1456,
+        2992
+      ],
+      "id": "943afe3d-ba46-446d-b1dd-e03efb040d01",
+      "name": "After AI"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        592,
+        2976
+      ],
+      "id": "874987bd-07dd-45f4-895a-bf707f2ceecb",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        2992
+      ],
+      "id": "e0f76f2c-3706-44f4-b617-b1739a0a7cb0",
+      "name": "OpenAI description API cooldown",
+      "webhookId": "06fa5ab6-b98d-4f7e-bae4-8de4dbd43770"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $('After AI').all();\n\nconst altCats = [\n  \"Alternatív Kategória 1\",\n  \"Alternatív Kategória 2\",\n  \"Alternatív Kategória 3\",\n  \"Alternatív Kategória 4\",\n  \"Alternatív Kategória 5\",\n  \"Alternatív Kategória 6\",\n  \"Alternatív Kategória 7\",\n];\n\nconst orderedKeys = [\n  \"Cikkszám\",\n  \"Termék Név\",\n  \"Rövid Leírás\",\n  \"Státusz\",\n  \"Nettó Ár\",\n  \"Bruttó Ár\",\n  \"Kategória\",\n  \"Kép link\",\n  ...altCats,\n];\n\nreturn items.map(item => {\n  const src = item.json;\n  const sorted = {};\n\n  for (const label of orderedKeys) {\n    const normLabel = label.toLowerCase().trim();\n\n    // keresünk olyan valós kulcsot, ami egyezik vagy tartalmazza a labelt\n    const realKey = Object.keys(src).find(k => {\n      const normKey = k.toLowerCase().trim();\n      return normKey === normLabel || normKey.includes(normLabel);\n    });\n\n    sorted[label] = realKey ? src[realKey] : \"\";\n  }\n\n  return { json: sorted };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        3264
+      ],
+      "id": "663567c1-e6f6-446a-88fa-ad1bc8d4e5ed",
+      "name": "set order/final data"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        864,
+        2784
+      ],
+      "id": "aa6c8b57-8dd6-4914-981a-be1206e51a87",
+      "name": "Done",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        3264
+      ],
+      "id": "0a8e6fcf-c449-48f0-a8bf-ce1201d0e85d",
+      "name": "Convert to csv"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b718894f-4938-4fdb-b29b-e8b4c559852a",
+              "leftValue": "={{ $json.product['Alternatív Kategória 1'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1888,
+        2544
+      ],
+      "id": "9484e9ce-22dc-4971-9856-18015e38400c",
+      "name": "keep necessary products"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        3264
+      ],
+      "id": "16fa6810-0574-475e-bd2e-e8ab0584d980",
+      "name": "extract token into JSON"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "[REDACTED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "[REDACTED]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<Params>\n  <Url><![CDATA[{{ '[REDACTED_URL]' + $('Upload file').item.json.id }}]]></Url>\n  <Lang>hu</Lang>\n  <DelType>no</DelType>\n</Params>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2416,
+        3264
+      ],
+      "id": "0c26405d-08ff-4971-ab26-724ec1d204f8",
+      "name": "SetProductDB",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "# upload product",
+        "height": 80,
+        "width": 384,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2336,
+        3104
+      ],
+      "typeVersion": 1,
+      "id": "6dfee75d-aef0-4794-963b-315cb1bc9800",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        2224
+      ],
+      "id": "0b07bf66-ea62-4cfc-a84d-f11e61dd8403",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3d2c0f7d-4efa-4204-8201-8984515aad3a",
+              "leftValue": "={{ $json['Nettó Ár'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "ca4c07da-971a-44f4-ae35-c08dba32ae31",
+              "leftValue": "={{ $json['Bruttó Ár'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2176,
+        2224
+      ],
+      "id": "4a0f1102-7772-436b-b8ee-e07028024dcf",
+      "name": "If price above zero"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "952b050e-a806-4468-9727-4427f76909d1",
+              "name": "data",
+              "value": "={{ $('Aggregate readed products').item.json.data }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        2544
+      ],
+      "id": "04805b6b-052e-41a2-9ec9-df6aa85af041",
+      "name": "readed products",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        2544
+      ],
+      "id": "a60440cb-c630-494a-b89a-9d154ffea204",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "561c5e36-c436-4974-80cf-d6ffd2522ed0",
+              "name": "product['Kategória']",
+              "value": "={{ $json.product['Alternatív Kategória 1'] }}",
+              "type": "string"
+            },
+            {
+              "id": "87832001-629e-4b1f-8ea3-81327c9966f3",
+              "name": "product['Alternatív Kategória 1']",
+              "value": "={{ $json.product['Alternatív Kategória 2'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ec96b8da-70f7-441e-bae1-e37055f9982d",
+              "name": "product['Alternatív Kategória 2']",
+              "value": "={{ $json.product['Alternatív Kategória 3'] }}",
+              "type": "string"
+            },
+            {
+              "id": "77fca844-2a4e-4a11-92cc-4a1636659cb6",
+              "name": "product['Alternatív Kategória 3']",
+              "value": "={{ $json.product['Alternatív Kategória 4'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8a8b6e42-e309-4ff7-870d-74a452f29dcf",
+              "name": "product['Alternatív Kategória 4']",
+              "value": "={{ $json.product['Alternatív Kategória 5'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5742eb86-9b99-409e-8423-c058366450fb",
+              "name": "product['Alternatív Kategória 5']",
+              "value": "={{ $json.product['Alternatív Kategória 6'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ef164df0-6334-49f2-b1ae-6359c1e52ae3",
+              "name": "product['Alternatív Kategória 6']",
+              "value": "={{ $json.product['Alternatív Kategória 7'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e95138f0-b778-4c55-a78a-6bfa14868231",
+              "name": "product['Alternatív Kategória 7']",
+              "value": "={{ $json.product['Alternatív Kategória 8'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        2976
+      ],
+      "id": "5d135185-8c9b-4e6b-99ce-63cb67c0d0aa",
+      "name": "change category order"
+    },
+    {
+      "parameters": {
+        "operation": "get"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        144,
+        2224
+      ],
+      "id": "2d7232ff-3946-4506-ae15-11ff2a6ea316",
+      "name": "prompt"
+    },
+    {
+      "parameters": {
+        "name": "products.csv",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "[REDACTED_ID]"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "[REDACTED_ID]",
+          "mode": "list",
+          "cachedResultName": "[REDACTED_NAME]",
+          "cachedResultUrl": "[REDACTED_URL]"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1360,
+        3264
+      ],
+      "id": "2b710d8a-dc14-427a-a676-aa5c64ba9d31",
+      "name": "Upload file"
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "[REDACTED_ID]",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        3264
+      ],
+      "id": "8bf51038-3b8f-4358-a96f-5b8f3295bf19",
+      "name": "Share file"
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "[REDACTED_ID]",
+          "mode": "id"
+        },
+        "options": {
+          "deletePermanently": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2688,
+        3264
+      ],
+      "id": "baf316ba-b48d-4447-8f37-019fca9883a9",
+      "name": "Delete a file"
+    },
+    {
+      "parameters": {
+        "url": "[REDACTED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>[REDACTED]</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        2224
+      ],
+      "id": "b3d0b2b2-aa5c-4d2f-8875-88d0b004f186",
+      "name": "UNAS-Login"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "[REDACTED_ID]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        2544
+      ],
+      "id": "158f5b9a-a4b9-4a21-89d3-5be33a0febd6",
+      "name": "categories"
+    },
+    {
+      "parameters": {
+        "jsCode": "const products = $input.all();\nconst sheetItems = $('categories').all();\n\n/**\n * OLD webshop category -> NEW webshop category\n */\nconst categoryMap = {};\n\nfor (const row of sheetItems) {\n  const oldCat = row.json.unas_shop?.trim();\n  const newCat = row.json.unas_other_shop?.trim();\n\n  if (oldCat && newCat && newCat !== '0') {\n    categoryMap[oldCat] = newCat;\n  }\n}\n\nconsole.log('CategoryMap size:', Object.keys(categoryMap).length);\nconsole.log('CategoryMap sample:', Object.entries(categoryMap).slice(0, 5));\n\nif (Object.keys(categoryMap).length === 0) {\n  throw new Error('Category map is EMPTY – check sheet headers');\n}\n\nconst output = [];\nlet skippedNoMain = 0;\nlet skippedNoMapping = 0;\n\nfor (const item of products) {\n  const data = JSON.parse(JSON.stringify(item.json)); // safe clone\n\n  // ---------- MAIN CATEGORY ----------\n  const oldMain = data.Kategória?.trim();\n\n  if (!oldMain) {\n    skippedNoMain++;\n    continue;\n  }\n\n  if (!categoryMap[oldMain]) {\n    skippedNoMapping++;\n    continue;\n  }\n\n  const newMain = categoryMap[oldMain];\n  data.Kategória = newMain;\n\n  // ---------- ALTERNATIVE CATEGORIES ----------\n  const oldAltCategories = [\n    data['Alternatív Kategória 1'],\n    data['Alternatív Kategória 2'],\n    data['Alternatív Kategória 3'],\n    data['Alternatív Kategória 4'],\n    data['Alternatív Kategória 5'],\n    data['Alternatív Kategória 6'],\n    data['Alternatív Kategória 7'],\n  ];\n\n  const newAltCategories = oldAltCategories\n    .map(cat => cat?.trim())\n    .filter(cat => {\n      if (!cat) return false;\n      if (!categoryMap[cat]) {\n        return false;\n      }\n      return true;\n    })\n    .map(cat => categoryMap[cat])\n    .filter(cat => cat !== newMain)\n    .filter((cat, i, arr) => arr.indexOf(cat) === i);\n\n  for (let i = 0; i < 7; i++) {\n    data[`Alternatív Kategória ${i + 1}`] = newAltCategories[i] || '';\n  }\n\n  output.push({\n    json: {\n      webshop: 'other',\n      product: data,\n    },\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        2544
+      ],
+      "id": "07645d32-3954-4ca2-9c55-e7f39c1cb3a7",
+      "name": "swap categories"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "GPT-5.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $('prompt').item.json.content }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.webshop }}\n{{ $json.product['Tulajdonságok'] }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1088,
+        2992
+      ],
+      "id": "e0da0d73-52da-4430-bb15-23a6570dbefa",
+      "name": "product description update",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "[REDACTED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>[REDACTED]</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        3264
+      ],
+      "id": "964c3fa9-626d-44a3-99df-2d4f4e31ea7e",
+      "name": "UNAS-Login other shop"
+    }
+  ],
+  "connections": {
+    "ConvertToJson": {
+      "main": [
+        [
+          {
+            "node": "get new products xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB": {
+      "main": [
+        [
+          {
+            "node": "ConvertToJson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get new products xlsx": {
+      "main": [
+        [
+          {
+            "node": "Extract from xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from xlsx": {
+      "main": [
+        [
+          {
+            "node": "If price above zero",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getToken": {
+      "main": [
+        [
+          {
+            "node": "GetProductDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "continue product flow": {
+      "main": [
+        [
+          {
+            "node": "categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate readed products": {
+      "main": [
+        [
+          {
+            "node": "continue product flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unas api key": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If category present": {
+      "main": [
+        [
+          {
+            "node": "Aggregate readed products",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "flow execution finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "After AI": {
+      "main": [
+        [
+          {
+            "node": "set order/final data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI description API cooldown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI description API cooldown": {
+      "main": [
+        [
+          {
+            "node": "product description update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set order/final data": {
+      "main": [
+        [
+          {
+            "node": "Convert to csv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to csv": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keep necessary products": {
+      "main": [
+        [
+          {
+            "node": "change category order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract token into JSON": {
+      "main": [
+        [
+          {
+            "node": "SetProductDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetProductDB": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If price above zero": {
+      "main": [
+        [
+          {
+            "node": "If category present",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "flow execution finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "readed products": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "swap categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "change category order": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prompt": {
+      "main": [
+        [
+          {
+            "node": "unas api key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login other shop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a file": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login": {
+      "main": [
+        [
+          {
+            "node": "getToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "categories": {
+      "main": [
+        [
+          {
+            "node": "readed products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "swap categories": {
+      "main": [
+        [
+          {
+            "node": "keep necessary products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "product description update": {
+      "main": [
+        [
+          {
+            "node": "After AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login other shop": {
+      "main": [
+        [
+          {
+            "node": "extract token into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b28fc681b2c89b122bd1ee69f4773cb9aed0fa411c2e88958bf1f39ea9cdfe40"
+  }
+}
