@@ -1,0 +1,1046 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "team": "__REMOVED_TEAM_ID__",
+        "space": "__REMOVED_SPACE_ID__",
+        "folderless": true,
+        "list": "__REMOVED_LIST_ID__",
+        "name": "={{ $('user data').item.json.name }}",
+        "additionalFields": {
+          "assignees": [
+            "__REMOVED_USER_ID__"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        528,
+        3040
+      ],
+      "id": "3f426313-bf86-4957-9ae2-b24cd9d997b7",
+      "name": "Create a task"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "__REMOVED_WEBHOOK_PATH__",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -832,
+        3024
+      ],
+      "id": "c31eccff-7aed-4965-8de0-2d4bec6c0e4c",
+      "name": "Webhook",
+      "webhookId": "cce696b8-6849-4a85-ab1f-2cf0b6688f52"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "__REMOVED_TABLE_ID__",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "__REMOVED_FIELD_ID__",
+              "condition": "eq",
+              "keyValue": "__REMOVED_FIELD_ID__"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "__REMOVED_FIELD_ID__",
+              "fieldValue": "={{ $json.formatted }}"
+            },
+            {
+              "fieldId": "__REMOVED_FIELD_ID__",
+              "fieldValue": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        3904
+      ],
+      "id": "9b6fdaf6-e4ad-4916-aa50-e77ad4231357",
+      "name": "Update a row"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>{{ $json.api_key }}</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -16,
+        3360
+      ],
+      "id": "26de628c-681f-4cdc-8257-01d98a1a33d2",
+      "name": "UNAS-Login Reflexshop"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        704,
+        3360
+      ],
+      "id": "96bffa16-4327-4dfa-a852-722010ced84f",
+      "name": "ConvertToJson"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "__REMOVED_AUTH_HEADER_VALUE__"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Category>605713</Category>\n  <Compress>no</Compress>\n  <GetName>1</GetName>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        3360
+      ],
+      "id": "a5494886-1d2f-41ed-bea6-90b7318150a7",
+      "name": "GetProductDB"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.getProductDB.Url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        3648
+      ],
+      "id": "4f69274e-3699-4d61-93fd-b6006eb9db0a",
+      "name": "get new products xlsx"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "includeEmptyCells": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        3648
+      ],
+      "id": "85582861-0f11-4a2e-9a5a-0c412f2e5044",
+      "name": "Extract from xlsx"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        224,
+        3360
+      ],
+      "id": "4fda2ffc-6ef7-4c0c-96b2-4449eab2665a",
+      "name": "getToken"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "518bb168-bf27-45e4-84fa-13777f31f3bd",
+              "name": "api_key",
+              "value": "__REMOVED_API_KEY__",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -272,
+        3360
+      ],
+      "id": "bb56eed9-6187-4538-842f-31aa376685ff",
+      "name": "unas api key"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inp = $input.all();\n\nconst tsx_file = []\n\nfor(const item of inp) {\n  tsx_file.push(item.json[\"Termék Név\"]);\n}\n\nreturn {\n  tsx_file\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        3648
+      ],
+      "id": "2c4ec51d-5dae-4a46-a706-7f89969283af",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b9b572f-7466-4a97-9d4d-3d291db2ee25",
+              "name": "formatted",
+              "value": "={{ \"export const dropdownOptions: string[] = [\" +  $json.tsx_file.map(item => \"`\" + `${item}` + \"`\").join(\"\\n,\") + ']'}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        3648
+      ],
+      "id": "6b827478-61bc-478e-866a-089c5ce57cba",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "content": "# clickup handler\n",
+        "height": 96,
+        "width": 384,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        16,
+        2704
+      ],
+      "typeVersion": 1,
+      "id": "5f2a35b8-6bb8-421d-b96f-16a74e6b48b9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# dropdown games handler",
+        "height": 96,
+        "width": 484,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        3200
+      ],
+      "typeVersion": 1,
+      "id": "e7e76e40-ff6c-47c8-9e3e-97002414078f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "ngrok-skip-browser-warning",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        336,
+        3904
+      ],
+      "id": "cbc350d4-6b35-46c3-8a6d-136bbed61b52",
+      "name": "trigger api"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachment",
+        "name": "={{ 'image-at-' + $now.format('yyyy-MM-dd-HH:mm:ss') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "__REMOVED_DRIVE_ID__"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "__REMOVED_FOLDER_ID__",
+          "mode": "list",
+          "cachedResultName": "__REMOVED_NAME__",
+          "cachedResultUrl": "__REMOVED_URL__"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        2864
+      ],
+      "id": "9a857bde-a0ea-4f32-ba57-d9d69f9ab4a1",
+      "name": "Upload file"
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        2864
+      ],
+      "id": "a400abfd-744c-4146-b72d-8dfcaf7a8f99",
+      "name": "Share file"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -496,
+        3360
+      ],
+      "id": "53954d6e-dc65-4005-a341-ba6b73491c7e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.jatek_nev }}",
+        "value": "={{ $('user data').item.json.gameName }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        2240
+      ],
+      "id": "d6d54283-c0d4-4e3b-9a9e-93e15fea517a",
+      "name": "jatek nev"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.email }}",
+        "value": "={{ $('user data').item.json.email }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        2464
+      ],
+      "id": "01f9711a-b6ef-47c4-91ba-25e60d813150",
+      "name": "email"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.potlas_leirasa }}",
+        "value": "={{ $('user data').item.json.replacementDescription }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        2688
+      ],
+      "id": "ea085a7f-ef2e-4f50-a4cb-f1fa303a1b7d",
+      "name": "replacement description"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.telefonszam }}",
+        "value": "={{ $('user data').item.json.phone.toJsonString() }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        2912
+      ],
+      "id": "0893b740-a3eb-47f6-aba0-e34dfb34c4cc",
+      "name": "phone"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.cim_atvetel_helye }}",
+        "value": "={{ $('user data').item.json.addressOrPickup }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        3136
+      ],
+      "id": "ab66996d-91ba-4234-ae92-560a82036a6e",
+      "name": "address"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.potlasi_kerelem }}",
+        "value": "={{ $json.potlasi_kerelem_opcio }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        3360
+      ],
+      "id": "6314c192-d1c4-435a-97a5-abf02d2c51a1",
+      "name": "potlasi kerelem"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.orderId }}",
+        "value": "={{ $('user data').item.json.orderId === '' ? $('user data').item.json.orderId : $('user data').item.json.orderId.toJsonString() }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        3568
+      ],
+      "id": "969bab1d-e9b7-49f1-8957-236cdc61c2e0",
+      "name": "order id"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "setCustomField",
+        "task": "={{ $json.task_id }}",
+        "field": "={{ $json.drive_url }}",
+        "value": "={{ $('Upload file').item.json.webViewLink }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        3776
+      ],
+      "id": "38e3d27e-bc35-482d-b993-fc75cc7c5218",
+      "name": "image url"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        3904
+      ],
+      "id": "6cb06335-fe00-4449-9ad1-1e0afde6efa5",
+      "name": "Wait",
+      "webhookId": "0bdd4bfb-ebcf-496d-bb2b-6d51c540c0f3"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "Termék Név"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        96,
+        3648
+      ],
+      "id": "219c9d9f-8c97-49e8-89f8-22e7bd23f1a6",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f4d04138-4cd7-4cac-8af3-28a148c31823",
+              "leftValue": "={{ $json.isAttachment }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        3024
+      ],
+      "id": "e02d8e5b-4e6c-4e7e-96e4-91ed1d1e5ed4",
+      "name": "If image"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4ca1165b-a6f9-40a0-a0eb-d4e8ccf3195c",
+              "leftValue": "={{ $('user data').item.json.isAttachment }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        3792
+      ],
+      "id": "b118c3f3-9af0-40ee-b6e0-47896a3203ba",
+      "name": "If image upload"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2d1c1fac-5ca9-4bf2-8e68-ac2f5d2b2971",
+              "name": "task_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "a8ac82a3-9286-4790-bd72-b39c82485b48",
+              "name": "jatek_nev",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Játék név').map(item => item.id)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "c020d78b-421e-45c8-81d4-adb837d35ea5",
+              "name": "email",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'E-mail').map(item => item.id)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "90f7c890-24ce-48e5-af71-b6c82a8d6779",
+              "name": "kepek",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Képek').map(item => item.id)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "1fbd499a-401a-4b8e-9734-e97855337945",
+              "name": "potlas_leirasa",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Pótlás leírása').map(item => item.id)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "6ed6dbc6-4c89-41d0-91ff-560620c58421",
+              "name": "telefonszam",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Telefonszám').map(item => item.id)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "18bbdaa7-3b28-410e-b0c3-838a44b4ed87",
+              "name": "cim_atvetel_helye",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Cím/Átvétel helye').map(item => item.id)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "37ac49d2-5b0a-48d5-9cf9-142d8cd7afb9",
+              "name": "potlasi_kerelem_opcio",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Pótlási kérelem').map(item => item.type_config)[0].options.filter(item => item.name === $('user data').item.json.replacementType)[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "d688e274-9866-4ef2-851c-1a11f6227763",
+              "name": "potlasi_kerelem",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Pótlási kérelem')[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "1f7822ad-2e2d-45fe-9532-f18b7bec28d1",
+              "name": "drive_url",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'drive_image_url')[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "9e4dd499-498d-418b-8fcd-0cafb5fcec71",
+              "name": "orderId",
+              "value": "={{ $json.custom_fields.filter(item => item.name === 'Rendelésszám')[0].id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        3040
+      ],
+      "id": "3bd84ab4-b6aa-431b-8a14-9fd9bcd685f2",
+      "name": "task fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ad245a6-5379-48db-be56-092d395e20ad",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "c07d7a61-71eb-4cc5-bb24-2cc0acb0bad8",
+              "name": "orderId",
+              "value": "={{ $json.body.orderId }}",
+              "type": "string"
+            },
+            {
+              "id": "fce45f9e-831b-45af-b8b9-8006eea12784",
+              "name": "gameName",
+              "value": "={{ $json.body.gameName }}",
+              "type": "string"
+            },
+            {
+              "id": "3cb93112-abe0-4bb3-97ed-449a046893d1",
+              "name": "replacementDescription",
+              "value": "={{ $json.body.replacementDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "abf0c5ed-9c53-41e3-86af-bd2a70143091",
+              "name": "replacementType",
+              "value": "={{ $json.body.replacementType }}",
+              "type": "string"
+            },
+            {
+              "id": "20e7d38d-33c4-426c-a73d-159931f0c48c",
+              "name": "addressOrPickup",
+              "value": "={{ $json.body.addressOrPickup === 'customAddress' ? $json.body.customAddress : $json.body.addressOrPickup }}",
+              "type": "string"
+            },
+            {
+              "id": "8d904e2a-af5b-4674-b8b6-b38a7004be13",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "5c478d87-b6ba-438d-bc38-308f383fea0c",
+              "name": "phone",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "db0ca783-cca0-49f6-b446-1065ba5d968a",
+              "name": "isAttachment",
+              "value": "={{ $json.body.isAttachment }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        3024
+      ],
+      "id": "5bcf3da6-7fe3-4486-9ce8-d0d26a380f68",
+      "name": "user data"
+    }
+  ],
+  "connections": {
+    "Create a task": {
+      "main": [
+        [
+          {
+            "node": "task fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "user data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login Reflexshop": {
+      "main": [
+        [
+          {
+            "node": "getToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertToJson": {
+      "main": [
+        [
+          {
+            "node": "get new products xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB": {
+      "main": [
+        [
+          {
+            "node": "ConvertToJson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get new products xlsx": {
+      "main": [
+        [
+          {
+            "node": "Extract from xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from xlsx": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getToken": {
+      "main": [
+        [
+          {
+            "node": "GetProductDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unas api key": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login Reflexshop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Create a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "unas api key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "trigger api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If image": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If image upload": {
+      "main": [
+        [
+          {
+            "node": "image url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "task fields": {
+      "main": [
+        [
+          {
+            "node": "jatek nev",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "replacement description",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "phone",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "address",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "potlasi kerelem",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If image upload",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "order id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "user data": {
+      "main": [
+        [
+          {
+            "node": "If image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b28fc681b2c89b122bd1ee69f4773cb9aed0fa411c2e88958bf1f39ea9cdfe40"
+  }
+}
