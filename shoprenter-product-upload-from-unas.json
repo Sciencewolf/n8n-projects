@@ -1,0 +1,1481 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        1360
+      ],
+      "id": "9b34b55f-7234-4335-a801-cb50296910c2",
+      "name": "ConvertToJson"
+    },
+    {
+      "parameters": {
+        "url": "https://api.unas.hu/shop/getProductDB",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $json.Login.Token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Category></Category>\n  <Compress>no</Compress>\n  <GetName>1</GetName>\n  <GetStatus>1</GetStatus>\n  <GetPrice>1</GetPrice>\n  <GetCategory>1</GetCategory>\n  <GetAlterCategory>1</GetAlterCategory>\n  <GetDescriptionLong>1</GetDescriptionLong>\n  <GetImage>1</GetImage>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        1360
+      ],
+      "id": "372d57b0-e1bc-46fe-a167-396c2151abfa",
+      "name": "GetProductDB"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.getProductDB.Url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1824,
+        1360
+      ],
+      "id": "fe5ff489-8c57-40ce-8a28-9e1f789e3806",
+      "name": "get new products xlsx"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "includeEmptyCells": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        1360
+      ],
+      "id": "66230671-983c-4a93-9029-0852004efc4f",
+      "name": "Extract from xlsx"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        1360
+      ],
+      "id": "4e7e57e3-31e9-45a0-aac6-47e641f6859c",
+      "name": "getToken"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        1392
+      ],
+      "id": "598c150b-30ed-480c-a76c-05649eaf3a12",
+      "name": "Aggregate readed products"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "518bb168-bf27-45e4-84fa-13777f31f3bd",
+              "name": "api_key",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        1360
+      ],
+      "id": "818b6606-6c67-48de-bfe2-b75dc457fac5",
+      "name": "unas api key"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "124dad7b-6511-45ce-a65e-937a184e37df",
+              "leftValue": "={{ $json['Alternatív Kategória 1'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2592,
+        1344
+      ],
+      "id": "5042eb25-78a1-4601-b6f8-53f74ce4fcee",
+      "name": "If category present"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        1616
+      ],
+      "id": "60010ed5-5cf5-49b8-9185-cb0ef923319e",
+      "name": "flow execution finished"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        1360
+      ],
+      "id": "a009d244-3d5a-4915-ba42-6f998700cd62",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        560,
+        1664
+      ],
+      "id": "ded1ca21-5d3f-44ff-a88f-49c261c0e51f",
+      "name": "continue"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "db3262d7-f6f1-4fde-9f2f-57a14e2d7374",
+              "leftValue": "={{ $json.product.categories }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1872,
+        1664
+      ],
+      "id": "3a99e410-ecdd-4f0c-b689-7d1907ffbad3",
+      "name": "keep necessary products"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        560,
+        1952
+      ],
+      "id": "38d3a136-9cec-4723-a3b4-b385464c7c81",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        1968
+      ],
+      "id": "ecbef34a-c0f6-4972-9dad-75452505d9ab",
+      "name": "OpenAI API cooldown",
+      "webhookId": "1d4977c8-8764-4bb0-910a-724891d81b22"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "GPT-5.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "={{ $('prompt AI').first().json.content }}"
+            },
+            {
+              "content": "={{ $json.product['Tulajdonságok'] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          },
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1056,
+        1968
+      ],
+      "id": "0b68af55-9612-49dd-818c-30d5608c7107",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "629271e4-2f1e-4fc3-9de1-3d07d0988bd4",
+              "name": "Cikkszám",
+              "value": "={{ $('OpenAI API cooldown').item.json.product['Cikkszám'] }}",
+              "type": "string"
+            },
+            {
+              "id": "eb822f7f-ed2a-49bb-bc33-a4d4968825cf",
+              "name": "Termék Név",
+              "value": "={{ $('OpenAI API cooldown').item.json.product['Termék Név'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f23eb48a-b1f6-4059-84d3-30b4f3c39de1",
+              "name": "shortDescription",
+              "value": "={{ $json.output[0].content[0].text.leiras }}",
+              "type": "string"
+            },
+            {
+              "id": "2182991b-9229-4e44-8ac2-eb1c237dd711",
+              "name": "Alapár",
+              "value": "={{ $('OpenAI API cooldown').item.json.product['Nettó Ár'] }}",
+              "type": "number"
+            },
+            {
+              "id": "49d2eec6-b8f1-4cbd-9d81-d983ddb2e40b",
+              "name": "Bruttó ár",
+              "value": "={{ $('OpenAI API cooldown').item.json.product['Bruttó Ár'] }}",
+              "type": "number"
+            },
+            {
+              "id": "dcacb8bc-049f-4cc4-b45d-834ed5ada09f",
+              "name": "Kép link",
+              "value": "={{ $('OpenAI API cooldown').item.json.product['Kép link'] }}",
+              "type": "string"
+            },
+            {
+              "id": "36251291-9437-4034-be3d-380f42942aa0",
+              "name": "categories",
+              "value": "={{ $('OpenAI API cooldown').item.json.product.categories }}",
+              "type": "array"
+            },
+            {
+              "id": "427d5093-2956-49f6-a9e0-121d309128dc",
+              "name": "webshop",
+              "value": "={{ $('OpenAI API cooldown').item.json.webshop }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        1968
+      ],
+      "id": "e4dcc7a3-2428-4c99-9a2c-e59b6accaa0e",
+      "name": "after AI"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('data').item.json['Kép link'].split(\"|\")[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2128,
+        1968
+      ],
+      "id": "86f6d5a2-a5f8-43d4-a1ee-932b44910350",
+      "name": "download image"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2352,
+        1968
+      ],
+      "id": "f1fb6b7b-4df7-4f7c-8d23-43d11b131bc5",
+      "name": "convert to base64 string"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2720,
+        2656
+      ],
+      "id": "39278db8-5b42-4efe-99aa-c9008a9ca93a",
+      "name": "continue loop",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Shoprenter API data').item.json.api_url_pop + \"/productCategoryRelations\" }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"product\": {\n    \"id\": {{ $('shoprenter setProduct').item.json.id.toJsonString() }}\n  },\n  \"category\": {\n    \"id\": {{ $json.categories.toJsonString() }}\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1744,
+        2208
+      ],
+      "id": "0e3d666c-2454-4615-96cd-c6196fd2a86b",
+      "name": "add to category product"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "categories",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        2208
+      ],
+      "id": "76b966a0-9178-444e-8f83-edcea9cb047f",
+      "name": "split out categories"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f9960805-57f3-4f6a-b8ec-ae0c96672b0f",
+              "name": "categories",
+              "value": "={{ $('data').item.json.categories }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        2208
+      ],
+      "id": "18f607b6-3d8c-4782-aef9-c2d61be7165c",
+      "name": "get categories"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Shoprenter API data').item.json.api_url_pop + '/productImages' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"imagePath\": {{ $json.filePath.toJsonString() }},\n  \"product\": {\n    \"id\": {{ $('shoprenter setProduct').first().json.id.toJsonString() }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2368,
+        2448
+      ],
+      "id": "76d8010b-ab82-4bc4-aa39-0eb244af4adb",
+      "name": "add images to product"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Shoprenter API data').item.json.api_url_pop + '/files' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"filePath\": \"{{'product/' +  $('data').item.json['Cikkszám']  + '.jpg'}}\",\n  \"type\": \"image\",\n  \"attachment\": {{ $json.data.toJsonString() }}\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        2224
+      ],
+      "id": "0631a3c8-f01f-4e8f-99bd-30fa274d6fef",
+      "name": "upload main image into file manager"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $('data').all();\n\nfunction slugify(str) {\n  return str\n    .toLowerCase()\n    .normalize('NFD')                 // remove accents\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-z0-9]+/g, '-')      // non-alphanum → dash\n    .replace(/^-+|-+$/g, '');         // trim dashes\n}\n\nconst output = [];\n\nfor (const item of items) {\n  const imageLinksRaw = item.json[\"Kép link\"];\n  const productName = item.json[\"Termék Név\"] || \"image\";\n\n  if (!imageLinksRaw || typeof imageLinksRaw !== \"string\") {\n    output.push({\n      json: {\n        ...item.json,\n        imageArray: []\n      }\n    });\n    continue;\n  }\n\n  const imageLinks = imageLinksRaw\n    .split(\"|\")\n    .map(l => l.trim())\n    .filter(Boolean)\n    .slice(1); // 🔥 REMOVE FIRST IMAGE\n\n  const baseName = slugify(productName);\n\n  const imageArray = imageLinks.map((url, index) => {\n    const ext = url.split(\".\").pop()?.split(\"?\")[0] || \"jpg\";\n\n    return {\n      imageUrl: url, // still a STRING\n      filename: `${baseName}-${index + 2}.${ext}` // starts from -2 (since main image is removed)\n    };\n  });\n\n  output.push({\n    json: {\n      ...item.json,\n      imageArray\n    }\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1968,
+        2208
+      ],
+      "id": "e31620ba-5433-483e-9fcd-a4547ffee6b8",
+      "name": "create filenames",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "imageArray",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        2448
+      ],
+      "id": "e13ce7e5-db15-40c7-bc98-306a7fa5eab8",
+      "name": "split images",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.imageUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1728,
+        2448
+      ],
+      "id": "b0d3bccb-c447-446d-b031-2c8af22c69c7",
+      "name": "download images"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Shoprenter API data').first().json.api_url_pop + '/files' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"filePath\": \"{{ 'product/' +  $('split images').item.json.filename }}\",\n  \"type\": \"image\",\n  \"attachment\": {{ $json.data.toJsonString() }}\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2160,
+        2448
+      ],
+      "id": "8ef9868c-1856-4655-8e01-b9369db4dfb2",
+      "name": "upload remaining image into file manager"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "00eabda3-4e57-477a-991a-87692ed23cad",
+              "leftValue": "={{ $json.imageArray }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1248,
+        2464
+      ],
+      "id": "dd7c9805-fea1-4de8-b3d7-700d4d87e4af",
+      "name": "If images present"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        2656
+      ],
+      "id": "69f3a8f0-dea2-4079-8941-dad2a7b200a1",
+      "name": "continue on false"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        1664
+      ],
+      "id": "30b60f80-a100-40cd-be62-266ccfde4e2b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "07b28eca-15a5-42b3-a9db-cc64c438b06e",
+              "name": "data",
+              "value": "={{ $('Aggregate readed products').item.json.data }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        1664
+      ],
+      "id": "7ce784d1-c684-4b71-871f-c1324f2dcec8",
+      "name": "readed products",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b46debf2-a83b-4181-8e80-eb5e7b71e975",
+              "name": "Cikkszám",
+              "value": "={{ $('after AI').item.json['Cikkszám'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c4374eca-9d9b-454d-9f02-bab1c5995fa3",
+              "name": "Termék Név",
+              "value": "={{ $('after AI').item.json['Termék Név'] }}",
+              "type": "string"
+            },
+            {
+              "id": "9b6e5a4c-1523-45ec-9bd2-651353146acd",
+              "name": "shortDescription",
+              "value": "={{ $('after AI').item.json.shortDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "a2d0ed3a-0c99-4884-8e19-87e0f941c7ee",
+              "name": "Alapár",
+              "value": "={{ $('after AI').item.json['Alapár'] }}",
+              "type": "number"
+            },
+            {
+              "id": "39fa29e8-c254-4f10-95b0-3f938561ebfe",
+              "name": "Bruttó ár",
+              "value": "={{ $('after AI').item.json['Bruttó ár'] }}",
+              "type": "number"
+            },
+            {
+              "id": "ce837d0d-226a-4a51-949a-7ba9907a99f1",
+              "name": "Kép link",
+              "value": "={{ $('after AI').item.json['Kép link'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a81fbec6-3d4a-4fea-835f-5de740e5b6cf",
+              "name": "categories",
+              "value": "={{ $('after AI').item.json.categories }}",
+              "type": "array"
+            },
+            {
+              "id": "e7b48afe-560e-4653-a65c-ace5c6583710",
+              "name": "lang",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1904,
+        1968
+      ],
+      "id": "ad7cb871-1705-43f4-9d07-8f8a14daae28",
+      "name": "data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d1e0b169-03c3-46b3-8529-66205bcae2fb",
+              "leftValue": "={{ $json['Nettó Ár'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "d6b1c114-79e1-4d86-99ca-ab35f9467487",
+              "leftValue": "={{ $json['Bruttó Ár'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2320,
+        1360
+      ],
+      "id": "b4784939-da36-4677-b23d-723b769631d3",
+      "name": "If price above zero"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{ JSON.parse($json.error.message.split('-')[1]).parseJson().href }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        2416
+      ],
+      "id": "13ec6fa0-580b-4c82-8f50-90995762b3b2",
+      "name": "delete existed product",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1936,
+        2448
+      ],
+      "id": "8d69ff9f-36f2-409d-a715-a90986157f9e",
+      "name": "convert to base64 string1"
+    },
+    {
+      "parameters": {
+        "operation": "get"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        496,
+        1360
+      ],
+      "id": "ab08e89d-bb7f-4b21-9877-92994f1e5901",
+      "name": "prompt AI"
+    },
+    {
+      "parameters": {
+        "jsCode": "const products = $input.all();\nconst sheetItems = $('category dict').all();\n\n\n/**\n * Build: reflexshop category -> id\n */\nconst categoryMap = {};\n\nfor (const row of sheetItems) {\n  const source = row.json.unas_shop?.trim();\n  const target = row.json.id?.trim();\n\n  if (source && target && target !== '0') {\n    categoryMap[source] = target;\n  }\n}\n\nif (Object.keys(categoryMap).length === 0) {\n  throw new Error('Category map is EMPTY – check sheet headers (reflexshop / id)');\n}\n\n/**\n * Extract ONLY alternative category fields\n */\nfunction extractProductCategories(data) {\n  return Object.keys(data)\n    .filter(key => key.startsWith('Alternatív Kategória'))\n    .map(key => data[key]?.trim())\n    .filter(Boolean);\n}\n\nconst output = [];\nlet skippedNoAltCategory = 0;\nlet skippedNoMapping = 0;\n\nfor (const item of products) {\n  const data = JSON.parse(JSON.stringify(item.json)); // safe clone\n\n  const altCategories = extractProductCategories(data);\n\n  if (altCategories.length === 0) {\n    skippedNoAltCategory++;\n    continue;\n  }\n\n  const mappedCategoryIds = altCategories\n    .filter(cat => {\n      if (!categoryMap[cat]) {\n        return false;\n      }\n      return true;\n    })\n    .map(cat => categoryMap[cat])\n    .filter((id, i, arr) => arr.indexOf(id) === i); // unique\n\n  if (mappedCategoryIds.length === 0) {\n    skippedNoMapping++;\n    continue;\n  }\n\n  data.categories = mappedCategoryIds;\n\n  delete data.Kategória;\n  Object.keys(data)\n    .filter(k => k.startsWith('Alternatív Kategória'))\n    .forEach(k => delete data[k]);\n\n  output.push({\n    json: {\n      webshop: 'shoprenter_shop',\n      product: data,\n    },\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        1664
+      ],
+      "id": "9c5d7d05-aee5-4485-b67f-371f526556f6",
+      "name": "swap categories JS code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "709be4b1-9fb1-406f-b73c-44b56660b012",
+              "name": "client_id_pop",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "ea2e2bf9-e1d4-44f8-81aa-9ffcda48f2a1",
+              "name": "client_secret_pop",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c2ae0393-57ee-4f66-b7ea-d2ea89bcdedf",
+              "name": "api_url_pop",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        1968
+      ],
+      "id": "4642dd88-b1d7-4bf0-b05e-2021bd7395ed",
+      "name": "Shoprenter API data"
+    },
+    {
+      "parameters": {
+        "url": "https://api.unas.eu/shop/login",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>{{ $json.api_key }}</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        1360
+      ],
+      "id": "cc436aaf-b446-4b55-9f83-b1d4b4a1caaa",
+      "name": "UNAS-Login"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        1664
+      ],
+      "id": "74624983-b4cb-4048-9ee7-580f5feba439",
+      "name": "category dict"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        976,
+        2208
+      ],
+      "id": "f06ddaeb-298d-43e2-96ed-906392ab752b",
+      "name": "flag product"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('Shoprenter API data').item.json.api_url_pop + \"/productExtend\" }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sku\": {{ $('data').item.json['Cikkszám'].toJsonString() }},\n  \"price\": {{ $('data').item.json['Bruttó ár'].toString().toJsonString() }},\n  \"mainPicture\": {{ $('upload main image into file manager').item.json.filePath.toJsonString() }},\n  \"productDescriptions\": [\n    {\n      \"name\": {{ $('data').item.json['Termék Név'].toJsonString() }},\n\"shortDescription\": {{ $('data').item.json.shortDescription.toJsonString() }},\n      \"language\": {\n        \"id\": {{ $('data').item.json.lang.toJsonString() }}\n      }\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        624,
+        2224
+      ],
+      "id": "d35b5816-d1d5-433f-aa03-89b11c315592",
+      "name": "shoprenter setProduct",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "4Pet44bXXDBbYj3s",
+          "name": "waboba Auth"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "connections": {
+    "ConvertToJson": {
+      "main": [
+        [
+          {
+            "node": "get new products xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB": {
+      "main": [
+        [
+          {
+            "node": "ConvertToJson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get new products xlsx": {
+      "main": [
+        [
+          {
+            "node": "Extract from xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from xlsx": {
+      "main": [
+        [
+          {
+            "node": "If price above zero",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getToken": {
+      "main": [
+        [
+          {
+            "node": "GetProductDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate readed products": {
+      "main": [
+        [
+          {
+            "node": "continue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unas api key": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If category present": {
+      "main": [
+        [
+          {
+            "node": "Aggregate readed products",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "flow execution finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "prompt AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "continue": {
+      "main": [
+        [
+          {
+            "node": "category dict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keep necessary products": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "OpenAI API cooldown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI API cooldown": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "after AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "after AI": {
+      "main": [
+        [
+          {
+            "node": "Shoprenter API data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download image": {
+      "main": [
+        [
+          {
+            "node": "convert to base64 string",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert to base64 string": {
+      "main": [
+        [
+          {
+            "node": "upload main image into file manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "continue loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add to category product": {
+      "main": [
+        [
+          {
+            "node": "create filenames",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split out categories": {
+      "main": [
+        [
+          {
+            "node": "add to category product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get categories": {
+      "main": [
+        [
+          {
+            "node": "split out categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add images to product": {
+      "main": [
+        [
+          {
+            "node": "continue loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload main image into file manager": {
+      "main": [
+        [
+          {
+            "node": "shoprenter setProduct",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create filenames": {
+      "main": [
+        [
+          {
+            "node": "If images present",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split images": {
+      "main": [
+        [
+          {
+            "node": "download images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download images": {
+      "main": [
+        [
+          {
+            "node": "convert to base64 string1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload remaining image into file manager": {
+      "main": [
+        [
+          {
+            "node": "add images to product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If images present": {
+      "main": [
+        [
+          {
+            "node": "split images",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "continue on false",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "continue on false": {
+      "main": [
+        [
+          {
+            "node": "continue loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "swap categories JS code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "readed products": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data": {
+      "main": [
+        [
+          {
+            "node": "download image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If price above zero": {
+      "main": [
+        [
+          {
+            "node": "If category present",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "flow execution finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete existed product": {
+      "main": [
+        [
+          {
+            "node": "shoprenter setProduct",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert to base64 string1": {
+      "main": [
+        [
+          {
+            "node": "upload remaining image into file manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prompt AI": {
+      "main": [
+        [
+          {
+            "node": "unas api key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "swap categories JS code": {
+      "main": [
+        [
+          {
+            "node": "keep necessary products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shoprenter API data": {
+      "main": [
+        [
+          {
+            "node": "data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login": {
+      "main": [
+        [
+          {
+            "node": "getToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "category dict": {
+      "main": [
+        [
+          {
+            "node": "readed products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "flag product": {
+      "main": [
+        [
+          {
+            "node": "get categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "shoprenter setProduct": {
+      "main": [
+        [
+          {
+            "node": "flag product",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "delete existed product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b28fc681b2c89b122bd1ee69f4773cb9aed0fa411c2e88958bf1f39ea9cdfe40"
+  }
+}
