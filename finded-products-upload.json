@@ -1,0 +1,1393 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "name": "Cikkszám",
+              "value": "={{ $('read finded products').item.json['Cikkszám'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000002",
+              "name": "Termék név",
+              "value": "={{ $('read finded products').item.json['Termék név'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000003",
+              "name": "Tulajdonságok",
+              "value": "={{ $json.output[0].content[0].text.leiras }}",
+              "type": "string"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000004",
+              "name": "Kép link",
+              "value": "={{ $('read finded products').item.json.kepek }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        1488
+      ],
+      "id": "879833dc-f65d-44b1-ba3e-ad5e55d47f22",
+      "name": "after AI"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "GPT-5.2"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "={{ $('prompt').item.json.content }}"
+            },
+            {
+              "content": "={{ $json.Leiras }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          },
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -336,
+        1488
+      ],
+      "id": "429b913a-788b-4461-a62a-b2ee4abddd23",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "00000000-0000-0000-0000-000000000007",
+              "leftValue": "={{ $json.Leiras }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -736,
+        1504
+      ],
+      "id": "768444a8-8ce1-4486-ab83-e0399e7112bd",
+      "name": "If description present"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00000000-0000-0000-0000-000000000009",
+              "name": "Leiras",
+              "value": "={{ \"termeknev: \" + $json['Termék név'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -512,
+        1648
+      ],
+      "id": "83d1a6a9-60bf-4a0a-b610-c5b0f14a26d1",
+      "name": "product name"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        1360
+      ],
+      "id": "fdba20ca-6dc8-46e2-bc25-ab305159092c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "[REMOVED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "[REMOVED_AUTHORIZATION]",
+              "value": "[REMOVED_AUTHORIZATION]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<Params>\n  <Url><![CDATA[{{ '[REMOVED_URL]' + $('Upload file').item.json.id }}]]></Url>\n  <Lang>hu</Lang>\n  <DelType>no</DelType>\n</Params>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        1360
+      ],
+      "id": "2175345a-4ceb-42dc-b20f-96f388ab0d30",
+      "name": "SetProductDB",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        48,
+        1120
+      ],
+      "id": "4452309d-ce8c-431a-ba40-858652a7c03b",
+      "name": "getToken"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00000000-0000-0000-0000-00000000000f",
+              "name": "api_key",
+              "value": "[REMOVED_SECRET]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -416,
+        1120
+      ],
+      "id": "89603d66-5300-4ec5-9a00-5f6cb398e2b7",
+      "name": "unas api key",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=termekfeltoltes kesz - {{ $now.format('yyyy-MM-dd HH:mm:ss') }} | termekek_db: {{ $('add product into tracking sheet').all().length }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1056,
+        1584
+      ],
+      "id": "2a526c53-5996-418b-a81e-6c7df0ee722e",
+      "name": "Respond to Webhook",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "path": "new-products",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -672,
+        1120
+      ],
+      "id": "6c4ffce6-c6a6-4b7e-9897-2e8ed7430caf",
+      "name": "Webhook for upload product",
+      "webhookId": "83e98def-78c3-4bc6-b10c-a39395222fde"
+    },
+    {
+      "parameters": {
+        "path": "get-products",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        432
+      ],
+      "id": "c2872101-5215-4fc5-be23-a2ea2e020755",
+      "name": "Webhook for fetch necessary products",
+      "webhookId": "1d3a94c5-f949-475a-8ce6-5c4d2b5c7ae4"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.getProductDB.Url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        432
+      ],
+      "id": "c475e51d-ab69-48ac-8849-8ecfa7237ddb",
+      "name": "get new products xlsx"
+    },
+    {
+      "parameters": {
+        "url": "[REMOVED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "[REMOVED_AUTHORIZATION]",
+              "value": "[REMOVED_AUTHORIZATION]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Category>761886</Category>\n  <Compress>no</Compress>\n  <GetName>1</GetName>\n  <GetDescriptionLong>1</GetDescriptionLong>\n  <GetImage>1</GetImage>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        704,
+        432
+      ],
+      "id": "db1210f0-8774-4bf3-a5a4-be269b78e6cb",
+      "name": "GetProductDB"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $input.all().length + ' out of ' + $('Extract from File').all().length }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        928,
+        736
+      ],
+      "id": "43813e22-f951-4528-9f65-621fbfac3277",
+      "name": "Respond to Webhook1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        944,
+        432
+      ],
+      "id": "83950c9b-aa83-4b1a-813a-aa65e4b38156",
+      "name": "XML"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "includeEmptyCells": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -224,
+        736
+      ],
+      "id": "d00a490d-f9d4-4f8a-897c-3a78152eaa9b",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "00000000-0000-0000-0000-00000000001d",
+              "leftValue": "={{ $json['Tulajdonságok'] }}",
+              "rightValue": "<!HTML KOD>",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "00000000-0000-0000-0000-00000000001e",
+              "leftValue": "={{ $json['Tulajdonságok'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "00000000-0000-0000-0000-00000000001f",
+              "leftValue": "={{ $json['Tulajdonságok'] }}",
+              "rightValue": "<!HTML KOD><!HTML KOD>",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000020",
+              "leftValue": "={{ $json['Tulajdonságok'] }}",
+              "rightValue": "<p></p>",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000021",
+              "leftValue": "={{ $json['Tulajdonságok'] }}",
+              "rightValue": "<p=",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        736
+      ],
+      "id": "33f0582c-2c7e-42cd-9451-3dbc786b859f",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "content": "# fetch new products",
+        "height": 80,
+        "width": 384,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        304
+      ],
+      "typeVersion": 1,
+      "id": "2a28a55a-404c-45a4-8865-5deee0a0e2af",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "00000000-0000-0000-0000-000000000028",
+              "leftValue": "={{ $json['Cikkszám'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        720,
+        1120
+      ],
+      "id": "214d7995-bdf4-42c3-b713-e0df7ddcb6c6",
+      "name": "If products"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "empty sheet/no new products",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        976,
+        1136
+      ],
+      "id": "64047f38-4e00-4430-86bf-955009522d04",
+      "name": "no new products"
+    },
+    {
+      "parameters": {
+        "name": "new-product",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "[REMOVED_GOOGLE_DRIVE_ID]"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "[REMOVED_GOOGLE_FOLDER_ID]",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        480,
+        1360
+      ],
+      "id": "d43965cf-a5fc-457b-b1e8-06083539b0bc",
+      "name": "Upload file"
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        688,
+        1360
+      ],
+      "id": "a3d18ac8-3902-48f2-8b2c-6f944b0f9b24",
+      "name": "Share file"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "[REMOVED_URL]"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        272,
+        1120
+      ],
+      "id": "82ed3633-a0a2-427b-9da3-b2e85398d450",
+      "name": "prompt",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "jZFgnWodoVtShUVW",
+          "name": "Google Docs OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        1120
+      ],
+      "id": "3fb19811-957f-4d2f-8288-c997a17b9671",
+      "name": "read finded products",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Upload file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "deletePermanently": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1168,
+        1360
+      ],
+      "id": "47b0b4a4-9ccb-47cf-99ae-f97e1fa48429",
+      "name": "Delete a file"
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "keepFirstRow": true
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1408,
+        1360
+      ],
+      "id": "88165e01-bcc4-4216-a71f-f498555a4469",
+      "name": "Clear sheet talalt_adatok",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+            "count": "={{ $input.all().length }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "count",
+              "displayName": "count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        1584
+      ],
+      "id": "21b7bd69-1d0c-40c7-9960-ca67ddf9484f",
+      "name": "Append row in sheet",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Cikkszám": "={{ $json['Cikkszám'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Cikkszám",
+              "displayName": "Cikkszám",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "<---- oszlop nevet kerlek ne torold ki :)",
+              "displayName": "<---- oszlop nevet kerlek ne torold ki :)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        1584
+      ],
+      "id": "92fbd18e-b2f4-4b4b-b064-f87faef722f7",
+      "name": "add product into tracking sheet"
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "keepFirstRow": true
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        1584
+      ],
+      "id": "3f4024f9-7701-419c-96bf-e2515e7553a6",
+      "name": "Clear sheet talalt_adatok1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "keepFirstRow": true
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        432
+      ],
+      "id": "59899550-f9f8-4851-939f-d811db39040d",
+      "name": "Clear sheet"
+    },
+    {
+      "parameters": {
+        "content": "# upload finded products\n",
+        "height": 80,
+        "width": 464,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        1008
+      ],
+      "typeVersion": 1,
+      "id": "ea806bfd-7b76-4153-b446-f6731cf63593",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "[REMOVED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>{{ $json.api_key }}</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        432
+      ],
+      "id": "669faf4c-4ac1-4edd-b921-7592b596bf45",
+      "name": "UNAS-Login Reflexshop2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        480,
+        432
+      ],
+      "id": "4c2a2730-792b-44c2-8b83-f7b912648d59",
+      "name": "getToken2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00000000-0000-0000-0000-00000000000f",
+              "name": "api_key",
+              "value": "[REMOVED_SECRET]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        432
+      ],
+      "id": "49e0bdff-ce17-401d-80f4-c18cdabe9f5b",
+      "name": "unas api key2",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00000000-0000-0000-0000-000000000023",
+              "name": "Cikkszám",
+              "value": "={{ $json['Cikkszám'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000024",
+              "name": "Termék Név",
+              "value": "={{ $json['Termék Név'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000025",
+              "name": "Kép link",
+              "value": "={{ $json[\"Kép link\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        736
+      ],
+      "id": "8e1f1b80-9946-4080-851c-90c30b4869d6",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_DOCUMENT_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "[REMOVED_GOOGLE_SHEET_ID]",
+          "mode": "list",
+          "cachedResultName": "[REMOVED_RESOURCE_NAME]",
+          "cachedResultUrl": "[REMOVED_URL]"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Cikkszám",
+              "displayName": "Cikkszám",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Termék Név",
+              "displayName": "Termék Név",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "termekek_db",
+              "displayName": "termekek_db",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        736
+      ],
+      "id": "29598e45-9dbc-45b2-9238-ea31c77a8051",
+      "name": "Append row in sheet2"
+    },
+    {
+      "parameters": {
+        "url": "[REMOVED_URL]",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>{{ $json.api_key }}</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        1120
+      ],
+      "id": "81459faa-550c-47bc-b283-570e38a93ee0",
+      "name": "UNAS-Login"
+    }
+  ],
+  "connections": {
+    "after AI": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "add product into tracking sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "after AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If description present": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "product name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "product name": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetProductDB": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getToken": {
+      "main": [
+        [
+          {
+            "node": "prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unas api key": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook for upload product": {
+      "main": [
+        [
+          {
+            "node": "unas api key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook for fetch necessary products": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get new products xlsx": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "get new products xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If products": {
+      "main": [
+        [
+          {
+            "node": "If description present",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "no new products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "SetProductDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prompt": {
+      "main": [
+        [
+          {
+            "node": "read finded products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read finded products": {
+      "main": [
+        [
+          {
+            "node": "If products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a file": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet talalt_adatok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet talalt_adatok1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add product into tracking sheet": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear sheet talalt_adatok1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear sheet": {
+      "main": [
+        [
+          {
+            "node": "unas api key2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login Reflexshop2": {
+      "main": [
+        [
+          {
+            "node": "getToken2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getToken2": {
+      "main": [
+        [
+          {
+            "node": "GetProductDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unas api key2": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login Reflexshop2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login": {
+      "main": [
+        [
+          {
+            "node": "getToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b28fc681b2c89b122bd1ee69f4773cb9aed0fa411c2e88958bf1f39ea9cdfe40"
+  }
+}
