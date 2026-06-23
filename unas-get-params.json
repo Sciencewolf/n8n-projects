@@ -1,0 +1,778 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        4672
+      ],
+      "id": "d3b0f359-bd67-48c3-82b9-738875730ef9",
+      "name": "ConvertToJson"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "__REMOVED_SENSITIVE_VALUE__"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Compress>no</Compress>\n  <LimitNum>4000</LimitNum>\n  <LimitStart>1</LimitStart>\n  <GetParam>1</GetParam>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        4448
+      ],
+      "id": "b58481b5-5353-4962-aa28-b2460e2a4d14",
+      "name": "GetProductDB"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.getProductDB.Url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2608,
+        4672
+      ],
+      "id": "5ceb4655-4c31-4fd9-90b3-2d0ee4a04370",
+      "name": "get new products xlsx"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "includeEmptyCells": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        4672
+      ],
+      "id": "56fce524-6cb1-438c-8392-445e78f49335",
+      "name": "Extract from xlsx"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        4672
+      ],
+      "id": "af00e37e-0ed1-4938-a047-4c6dd6a7a5e5",
+      "name": "getToken"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "518bb168-bf27-45e4-84fa-13777f31f3bd",
+              "name": "api_key",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        4672
+      ],
+      "id": "da5452e4-0ad7-4ba2-b60b-b2a159151e84",
+      "name": "unas api key"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        4672
+      ],
+      "id": "d666e8ee-9e59-4697-a2c7-fb0b73bf861c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all();\n\nreturn input.map(item => {\n  const output = {};\n\n  for (const [key, value] of Object.entries(item.json)) {\n\n    // Nem paraméter mezők megtartása\n    if (!key.startsWith('Paraméter:')) {\n      output[key] = value;\n      continue;\n    }\n\n    // Üres paraméter értékek kihagyása\n    if (value === \"\" || value === null || value === undefined) continue;\n\n    // Paraméter név tisztítása: | vagy || előtti rész kell\n    const cleanKey = key\n      .split('|')[0]\n      .replace('Paraméter:', '')\n      .trim();\n\n    output[cleanKey] = value;\n  }\n\n  return {\n    json: output\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3184,
+        4672
+      ],
+      "id": "e39f5591-8433-4410-ab8a-a681e1d9b6a5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "__REMOVED_ID__",
+          "mode": "list",
+          "cachedResultName": "__REMOVED_REFERENCE__",
+          "cachedResultUrl": "__REMOVED_REFERENCE__"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "params",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/__REMOVED_GOOGLE_FILE_ID__"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Cikkszám",
+              "displayName": "Cikkszám",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Típus",
+              "displayName": "Típus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Vonalkód/GTIN Azonosító",
+              "displayName": "Vonalkód/GTIN Azonosító",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "manufacturer",
+              "displayName": "manufacturer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "identifier_exists",
+              "displayName": "identifier_exists",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Termék státusz",
+              "displayName": "Termék státusz",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Előrendelhető",
+              "displayName": "Előrendelhető",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Téma",
+              "displayName": "Téma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Kategória",
+              "displayName": "Kategória",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modosult",
+              "displayName": "Modosult",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Fizz.hu termék azonosító",
+              "displayName": "Fizz.hu termék azonosító",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Fizz.hu kereskedői termékváltozat azonosító",
+              "displayName": "Fizz.hu kereskedői termékváltozat azonosító",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Átfutási idő",
+              "displayName": "Átfutási idő",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Kor",
+              "displayName": "Kor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Hol szeretnéd használni?",
+              "displayName": "Hol szeretnéd használni?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Youtube videók",
+              "displayName": "Youtube videók",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mit fejleszt?",
+              "displayName": "Mit fejleszt?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tömeges paraméterek",
+              "displayName": "Tömeges paraméterek",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nyelv",
+              "displayName": "Nyelv",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Játékosszám",
+              "displayName": "Játékosszám",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tömeges paraméterek Játékos szám",
+              "displayName": "Tömeges paraméterek Játékos szám",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tömeges paraméterek Játékos kora",
+              "displayName": "Tömeges paraméterek Játékos kora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Komplexitás",
+              "displayName": "Komplexitás",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Játékidő",
+              "displayName": "Játékidő",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tömeges paraméterek Játék idő",
+              "displayName": "Tömeges paraméterek Játék idő",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Játékosszám (minimális)",
+              "displayName": "Játékosszám (minimális)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "promo",
+              "displayName": "promo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Játékszabály",
+              "displayName": "Játékszabály",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Várható:",
+              "displayName": "Várható:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "További szöveges dokumentum",
+              "displayName": "További szöveges dokumentum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "További szöveges dokumentum 2",
+              "displayName": "További szöveges dokumentum 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "További szöveges dokumentum 3",
+              "displayName": "További szöveges dokumentum 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "További szöveges dokumentum 4",
+              "displayName": "További szöveges dokumentum 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "További szöveges dokumentum 5",
+              "displayName": "További szöveges dokumentum 5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3472,
+        4672
+      ],
+      "id": "a9298ef4-a4c0-4723-8bdd-86e2bf2460c6",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "__REMOVED_SENSITIVE_VALUE__"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Compress>no</Compress>\n  <LimitNum>4000</LimitNum>\n  <LimitStart>4000</LimitStart>\n  <GetParam>1</GetParam>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        4672
+      ],
+      "id": "63e2152b-d285-4812-adf1-1005e355beb3",
+      "name": "GetProductDB1"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "__REMOVED_SENSITIVE_VALUE__"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/xml",
+        "body": "=<Params>\n  <Format>xlsx</Format>\n  <Compress>no</Compress>\n  <LimitNum>4000</LimitNum>\n  <LimitStart>8000</LimitStart>\n  <GetParam>1</GetParam>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        4912
+      ],
+      "id": "814e1fc6-ff0e-4a36-99f1-29f12a7ca0c0",
+      "name": "GetProductDB2"
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "__REMOVED_ID__",
+          "mode": "list",
+          "cachedResultName": "__REMOVED_REFERENCE__",
+          "cachedResultUrl": "__REMOVED_REFERENCE__"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "params",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/__REMOVED_GOOGLE_FILE_ID__"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        4672
+      ],
+      "id": "1ad3d447-0135-4fb1-afeb-b04d7bcb3c83",
+      "name": "Clear sheet"
+    },
+    {
+      "parameters": {
+        "url": "__REMOVED_URL__",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/xml"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=<Params>\n  <ApiKey>{{ $json.api_key }}</ApiKey>\n</Params>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1184,
+        4672
+      ],
+      "id": "09ca729a-c760-41d7-b6f9-2528f2a9699b",
+      "name": "UNAS-Login"
+    }
+  ],
+  "connections": {
+    "ConvertToJson": {
+      "main": [
+        [
+          {
+            "node": "get new products xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB": {
+      "main": [
+        [
+          {
+            "node": "ConvertToJson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get new products xlsx": {
+      "main": [
+        [
+          {
+            "node": "Extract from xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from xlsx": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getToken": {
+      "main": [
+        [
+          {
+            "node": "GetProductDB",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GetProductDB1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GetProductDB2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unas api key": {
+      "main": [
+        [
+          {
+            "node": "UNAS-Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB1": {
+      "main": [
+        [
+          {
+            "node": "ConvertToJson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProductDB2": {
+      "main": [
+        [
+          {
+            "node": "ConvertToJson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear sheet": {
+      "main": [
+        [
+          {
+            "node": "unas api key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNAS-Login": {
+      "main": [
+        [
+          {
+            "node": "getToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b28fc681b2c89b122bd1ee69f4773cb9aed0fa411c2e88958bf1f39ea9cdfe40"
+  }
+}
